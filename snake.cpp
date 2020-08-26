@@ -36,7 +36,7 @@ void reset_board() {
 		board[body[i].first][body[i].second] = 'o';
 	for (auto x : body)
 		snake_pos[x.first][x.second] = true;
-		
+
 	board[foodX][foodY] = 'X';
 }
 
@@ -116,126 +116,136 @@ bool food_eaten() {
 	return body[0].first == foodX && body[0].second == foodY;
 }
 
+char key;
 void handle_input() {
-	char key = _getch();
-	
-	
-	if (key == KEY_UP && valid_move(key)) {
-		
-		std::pair<int, int> prev = body[0];
-
-		body[0].first--;
-		if (body[0].first == 0)
-			body[0].first = 23;
-		if (game_over(body[0].first, body[0].second)) {
-			std::cout << "Game is over\n";
-			exit(0);
-		}
-		if (food_eaten()) {
-			board[foodX][foodY] = ' ';
-			// add tail 
-			body.push_back({ body.back().first + 1, body.back().second });
-			reset_board();
-			// draw new food
-			food();
-		}
-
-		
-		for (int i = 1; i < body.size(); i++) {
-			std::pair<int, int> tmp = body[i];
-			body[i] = prev;
-			prev = tmp;
-
-		}
-		
-	}
+	key = _getch();
+	while (true) {
+		if (_kbhit()) {
+			char tmp = key;
+			key = _getch();
+			if (!valid_move(key))
+				key = tmp;
 			
-		
-	else if (key == KEY_DOWN && valid_move(key)) {
-		
-		std::pair<int, int> prev = body[0];
-		body[0].first++;
-		if (body[0].first == 24)
-			body[0].first = 1;
-		if (game_over(body[0].first, body[0].second)) {
-			std::cout << "Game is over\n";
-			exit(0);
 		}
-		if (food_eaten()) {
-			board[foodX][foodY] = ' ';
-			body.push_back({body.back().first - 1, body.back().second});
-			reset_board();
-			food();
-		}
-		
-		for (int i = 1; i < body.size(); i++) {
-			std::pair<int, int> tmp = body[i];
-			body[i] = prev;
-			prev = tmp;
+
+		if (key == KEY_UP && valid_move(key)) {
+
+			std::pair<int, int> prev = body[0];
+
+			body[0].first--;
+			if (body[0].first == 0)
+				body[0].first = 23;
+			if (game_over(body[0].first, body[0].second)) {
+				std::cout << "Game is over\n";
+				exit(0);
+			}
+			if (food_eaten()) {
+				board[foodX][foodY] = ' ';
+				// add tail 
+				body.push_back({ body.back().first + 1, body.back().second });
+				reset_board();
+				// draw new food
+				food();
+			}
+
+
+			for (int i = 1; i < body.size(); i++) {
+				std::pair<int, int> tmp = body[i];
+				body[i] = prev;
+				prev = tmp;
+
+			}
 
 		}
-		
-			
+
+
+		else if (key == KEY_DOWN && valid_move(key)) {
+
+			std::pair<int, int> prev = body[0];
+			body[0].first++;
+			if (body[0].first == 24)
+				body[0].first = 1;
+			if (game_over(body[0].first, body[0].second)) {
+				std::cout << "Game is over\n";
+				exit(0);
+			}
+			if (food_eaten()) {
+				board[foodX][foodY] = ' ';
+				body.push_back({ body.back().first - 1, body.back().second });
+				reset_board();
+				food();
+			}
+
+			for (int i = 1; i < body.size(); i++) {
+				std::pair<int, int> tmp = body[i];
+				body[i] = prev;
+				prev = tmp;
+
+			}
+
+
+		}
+		else if (key == KEY_LEFT && valid_move(key)) {
+			if (cnt == 1) return;
+			cnt = 0;
+			std::pair<int, int> prev = body[0];
+			body[0].second--;
+			if (body[0].second == 0) {
+				body[0].second = 88;
+			}
+			if (game_over(body[0].first, body[0].second)) {
+				std::cout << "Game is over\n";
+				exit(0);
+			}
+			if (food_eaten()) {
+				board[foodX][foodY] = ' ';
+				body.push_back({ body.back().first, body.back().second + 1 });
+				reset_board();
+				food();
+			}
+
+			for (int i = 1; i < body.size(); i++) {
+				std::pair<int, int> tmp = body[i];
+				body[i] = prev;
+				prev = tmp;
+
+			}
+
+		}
+		else if (key == KEY_RIGHT && valid_move(key)) {
+			std::pair<int, int> prev = body[0];
+			body[0].second++;
+			if (body[0].second == 89) {
+				body[0].second = 1;
+			}
+			if (game_over(body[0].first, body[0].second)) {
+				std::cout << "Game is over\n";
+				exit(0);
+			}
+			if (food_eaten()) {
+				board[foodX][foodY] = ' ';
+				body.push_back({ body.back().first, body.back().second - 1 });
+				reset_board();
+				food();
+			}
+
+			for (int i = 1; i < body.size(); i++) {
+				std::pair<int, int> tmp = body[i];
+				body[i] = prev;
+				prev = tmp;
+
+			}
+
+		}
+		system("cls");
+		reset_board();
+		draw_board();
 	}
-	else if (key == KEY_LEFT && valid_move(key)) {
-		if (cnt == 1) return;
-		cnt = 0;
-		std::pair<int, int> prev = body[0];
-		body[0].second--;
-		if (body[0].second == 0) {
-			body[0].second = 88;
-		}
-		if (game_over(body[0].first, body[0].second)) {
-			std::cout << "Game is over\n";
-			exit(0);
-		}
-		if (food_eaten()) {
-			board[foodX][foodY] = ' ';
-			body.push_back({ body.back().first, body.back().second + 1 });
-			reset_board();
-			food();
-		}
-		
-		for (int i = 1; i < body.size(); i++) {
-			std::pair<int, int> tmp = body[i];
-			body[i] = prev;
-			prev = tmp;
-
-		}
-			
-	}
-	else if (key == KEY_RIGHT && valid_move(key)) {
-		std::pair<int, int> prev = body[0];
-		body[0].second++;
-		if (body[0].second == 89) {
-			body[0].second = 1;
-		}
-		if (game_over(body[0].first, body[0].second)) {
-			std::cout << "Game is over\n";
-			exit(0);
-		}
-		if (food_eaten()) {
-			board[foodX][foodY] = ' ';
-			body.push_back({ body.back().first, body.back().second - 1 });
-			reset_board();
-			food();
-		}
-		
-		for (int i = 1; i < body.size(); i++) {
-			std::pair<int, int> tmp = body[i];
-			body[i] = prev;
-			prev = tmp;
-
-		}
-			
-	}
-	system("cls");
-	reset_board();
-	draw_board();
-	
+	//handle_input();
 
 
-		
+
+
 }
 int main()
 {
@@ -251,7 +261,7 @@ int main()
 		handle_input();
 		//system("cls");
 	}
-	
+
 
 	return 0;
 
